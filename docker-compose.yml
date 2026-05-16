@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  glpi:
+    image: elestio/glpi:11.0.7
+    container_name: app_glpi
+    restart: unless-stopped
+    ports:
+      - "${GLPI_PORT}:80"
+    environment:
+      - GLPI_LANG=es_ES
+      - MARIADB_HOST=${DB_HOST}
+      - MARIADB_PORT=${DB_PORT}
+      - MARIADB_DATABASE=${DB_NAME}
+      - MARIADB_USER=${DB_USER}
+      - MARIADB_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - ./glpi_data:/var/www/html
