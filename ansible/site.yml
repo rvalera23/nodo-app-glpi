@@ -1,0 +1,28 @@
+---
+- name: Instalación Automática de Nodo App GLPI
+  hosts: all
+  become: yes
+  tasks:
+    - name: FASE 1 - Instalar Docker y herramientas del sistema
+      apt:
+        name:
+          - docker.io
+          - docker-compose
+          - curl
+          - git
+        state: present
+        update_cache: yes
+
+    - name: FASE 2 - Crear carpeta de persistencia de la App
+      file:
+        path: "/opt/servicios/nodo-app-glpi/glpi_data"
+        state: directory
+        mode: '0755'
+        owner: "www-data"
+        group: "www-data"
+
+    - name: FASE 3 - Descargar imagen optimizada de GLPI
+      shell: "docker pull elestio/glpi:11.0.7"
+
+    - name: FASE 4 - Despliegue e inicio del contenedor
+      shell: "cd /opt/servicios/nodo-app-glpi && docker compose up -d"
