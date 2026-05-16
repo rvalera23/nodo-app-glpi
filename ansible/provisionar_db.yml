@@ -1,0 +1,40 @@
+---
+- name: Automatizacion de Base de Datos Centralizada (NODO)
+  hosts: db_central
+  become: no
+  gather_facts: no # No necesitamos interrogar al OS de la VM para configurar MySQL
+  vars:
+    glpi_db_name: "glpi_db"
+    glpi_db_user: "glpi_user"
+    glpi_db_pass: "admin123*"
+    mysql_root_password: "admin123*"
+
+  tasks:
+    - name: 1. Crear la Base de Datos para el servicio desde la red
+      community.mysql.mysql_db:
+        name: "{{ glpi_db_name }}"
+        state: present
+        login_host: "192.168.1.210"
+        login_port: 3306
+        login_user: root
+        login_password: "{{ mysql_root_password }}"
+
+    - name: 2. Crear Usuario y otorgar permisos desde cualquier IP (%)
+      community.mysql.mysql_user:
+        name: "{{ glpi_db_user }}"
+        password: "{{ glpi_db_pass }}"
+        priv: "{{ glpi_db_name }}.*:ALL"
+        host: "%"
+        state: present
+        login_host: "192.168.1.210"
+        login_port: 3306
+        login_user: root
+        login_password: "{{ mysql_root_password }}"
+
+    - name: 3. Aplicar FLUSH PRIVILEGES de forma segura
+      community.mysql.mysql_query:
+        query: "FLUSH PRIVILEGES;"
+        login_host: "192.168.1.210"
+        login_port: 3306
+        login_user: root
+        login_password: "{{ mysql_root_password }}"

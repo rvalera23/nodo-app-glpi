@@ -1,2 +1,4 @@
 .env
 glpi_data/
+*.retry
+.ansible_cache/
