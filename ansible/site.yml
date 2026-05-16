@@ -1,6 +1,6 @@
 ---
 - name: Instalación Automática de Nodo App GLPI
-  hosts: all
+  hosts: glpi_servers
   become: yes
   tasks:
     - name: FASE 1 - Instalar Docker y herramientas del sistema
