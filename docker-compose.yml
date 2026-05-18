@@ -15,4 +15,4 @@ services:
       - MARIADB_USER=${DB_USER}
       - MARIADB_PASSWORD=${DB_PASSWORD}
     volumes:
-      - ./glpi_data:/var/www/html
+      - /opt/servicios/nodo-app-glpi/glpi_data:/var/www/html

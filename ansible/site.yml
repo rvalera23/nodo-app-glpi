@@ -17,9 +17,18 @@
       file:
         path: "/opt/servicios/nodo-app-glpi/glpi_data"
         state: directory
+        mode: '0775'
+        owner: "1000"
+        group: "1000"
+
+    - name: FASE 2.1 - Forzar árbol jerárquico de backups para Diseño y Archivos (A prueba de fallas)
+      file:
+        path: "/opt/servicios/nodo-app-glpi/backups/glpi_files"
+        state: directory
         mode: '0755'
-        owner: "www-data"
-        group: "www-data"
+        owner: "1000"
+        group: "1000"
+        recurse: yes
 
     - name: FASE 3 - Descargar imagen optimizada de GLPI
       shell: "docker pull elestio/glpi:11.0.7"
