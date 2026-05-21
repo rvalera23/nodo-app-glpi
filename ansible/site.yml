@@ -12,6 +12,7 @@
           - git
         state: present
         update_cache: yes
+      ignore_errors: yes
 
     - name: FASE 2 - Crear carpeta de persistencia de la App
       file:
@@ -35,3 +36,31 @@
 
     - name: FASE 4 - Despliegue e inicio del contenedor
       shell: "cd /opt/servicios/nodo-app-glpi && docker compose up -d"
+
+    - name: FASE 4.1 - Esperar a que GLPI esté listo
+      wait_for:
+        port: 8081
+        delay: 5
+        timeout: 60
+
+    - name: FASE 5 - Lógica inteligente de base de datos (Instalar o Actualizar)
+      shell: |
+        source /opt/servicios/nodo-app-glpi/.env
+        
+        if [ ! -f "/opt/servicios/nodo-app-glpi/glpi_data/config/config_db.php" ]; then
+          echo "Realizando instalación inicial..."
+          docker exec -u 33 app_glpi php /var/www/glpi/bin/console glpi:database:install \
+            --no-interaction \
+            --db-host="${DB_HOST}" \
+            --db-name="${DB_NAME}" \
+            --db-user="${DB_USER}" \
+            --db-password="${DB_PASSWORD}" \
+            --default-language="es_ES"
+        else
+          echo "GLPI detectado. Ejecutando actualización de esquema..."
+          docker exec -u 33 app_glpi php /var/www/glpi/bin/console glpi:database:update --no-interaction
+        fi
+      args:
+        executable: /bin/bash
+      register: db_status
+      changed_when: true
