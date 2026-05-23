@@ -3,7 +3,7 @@
   hosts: glpi_servers
   become: yes
   tasks:
-    - name: FASE 1 - Instalar Docker y herramientas del sistema
+    - name: FASE 1 - Instalar Docker y dependencias
       apt:
         name:
           - docker.io
@@ -14,7 +14,7 @@
         update_cache: yes
       ignore_errors: yes
 
-    - name: FASE 2 - Crear carpeta de persistencia de la App
+    - name: FASE 2 - Crear carpeta de persistencia de GLPI
       file:
         path: "/opt/servicios/nodo-app-glpi/glpi_data"
         state: directory
@@ -22,7 +22,7 @@
         owner: "1000"
         group: "1000"
 
-    - name: FASE 2.1 - Forzar árbol jerárquico de backups para Diseño y Archivos (A prueba de fallas)
+    - name: FASE 2.1 - Estructura jerárquica de backups
       file:
         path: "/opt/servicios/nodo-app-glpi/backups/glpi_files"
         state: directory
